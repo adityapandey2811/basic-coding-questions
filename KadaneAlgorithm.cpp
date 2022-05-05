@@ -1,12 +1,14 @@
 int maxSubArray(vector<int>& nums) {
-        vector<int>::iterator it;
+        int i;
         int curSum = 0, maxSum = INT_MIN;
-        for(it = nums.begin();it<nums.end();it++){
+        vector<int>::iterator it = nums.begin();
+        while(it!=nums.end()){
             curSum+=*it;
             if(curSum > maxSum)
                 maxSum = curSum;
             if(curSum < 0)
                 curSum = 0;
+            it++;
         }
         return maxSum;
     }

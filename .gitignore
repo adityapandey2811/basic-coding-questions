@@ -55,5 +55,5 @@ dkms.conf
 .vscode
 
 # Test files
-test.cpp
-test.exe
+# test.cpp
+# test.exe

@@ -52,3 +52,39 @@ int main()
     }
     return 0;
 }
+
+
+//My Way
+vector<vector<int>> threeSum(vector<int> &nums)
+{
+    int i, j, k = INT_MAX;
+    vector<vector<int>> res;
+    sort(nums.begin(), nums.end());
+    for (i = 0; i < nums.size() - 2; i++)
+    {
+        if (k == nums[i])
+            continue;
+        else
+            k = nums[i];
+
+        int sum = -nums[i], it;
+        unordered_map<int, int> mp;
+        for (it = i + 1; it < nums.size(); it++)
+        {
+            if (mp.find(sum - nums[it]) == mp.end())
+            {
+                mp[nums[it]] = it;
+            }
+            else
+            {
+                vector<int> v;
+                v.push_back(nums[i]);
+                v.push_back(nums[mp[sum - nums[it]]]);
+                v.push_back(nums[it]);
+                res.push_back(v);
+            }
+        }
+    }
+    res.erase(unique(res.begin(), res.end()), res.end());
+    return res;
+}

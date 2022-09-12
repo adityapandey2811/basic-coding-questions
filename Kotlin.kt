@@ -437,7 +437,7 @@ fun main() {
     }
 }
 
-//Test Code 13 (Input And Hangman Game)
+//Test Code 13 (I/O And Hangman Game)
 
 package io
 

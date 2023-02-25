@@ -1,3 +1,45 @@
+// Optimal Solution
+void setZeroes(vector<vector<int>>& matrix) {
+        int row = 1, col = 1, i, j;
+        for(i=0;i<matrix.size();i++){
+            if(matrix[i][0] == 0){
+                col = 0;
+            }
+        }
+        for(j=0;j<matrix[0].size();j++){
+            if(matrix[0][j] == 0){
+                row = 0;
+            }
+        }
+        for(i=1;i<matrix.size();i++){
+            for(j=1;j<matrix[0].size();j++){
+                if(matrix[i][j] == 0){
+                    matrix[0][j] = 0;
+                    matrix[i][0] = 0;
+                }
+            }
+        }
+        for(i=1;i<matrix.size();i++){
+            for(j=1;j<matrix[0].size();j++){
+                if(matrix[i][0] == 0 || matrix[0][j] == 0){
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        if(col == 0){
+            for(i=0;i<matrix.size();i++){
+                matrix[i][0] = 0;
+            }
+        }
+        if(row == 0){
+            for(j=0;j<matrix[0].size();j++){
+                matrix[0][j] = 0;
+            }
+        }
+    }
+
+
+// Lame Solution
 void setZero(vector<vector<int>>& z, vector<vector<int>>& matrix){
     int i, j, k;
     int n = matrix.size(), m = matrix[0].size();

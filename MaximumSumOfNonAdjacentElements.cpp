@@ -1,3 +1,21 @@
+//DP Solution with Tabulation
+#include <bits/stdc++.h> 
+int maximumNonAdjacentSum(vector<int> &nums){
+    vector<int> dp(nums.size(), 0);
+    dp[0] = nums[0];
+    int neg = 0;
+    int odd, even;
+    for(int i=1;i<nums.size();i++){
+        odd = nums[i];
+        if(i > 1){
+            odd += dp[i-2];
+        }
+        even = dp[i-1];
+        dp[i] = max(odd, even);
+    }
+    return dp[nums.size()-1];
+}
+
 // DP Solution using Memoization
 #include <bits/stdc++.h> 
 int fr(int i, vector<int> &nums, vector<int>& dp){

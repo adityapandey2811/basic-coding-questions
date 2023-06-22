@@ -1,3 +1,20 @@
+//DP Solution with Tabulation and Space Optimization
+#include <bits/stdc++.h> 
+int maximumNonAdjacentSum(vector<int> &nums){
+    int odd, even;
+    int prev = nums[0], prev2;
+    for(int i=1;i<nums.size();i++){
+        odd = nums[i];
+        if(i > 1){
+            odd += prev2;
+        }
+        even = prev;
+        prev2 = prev;
+        prev = max(odd, even);
+    }
+    return prev;
+}
+
 //DP Solution with Tabulation
 #include <bits/stdc++.h> 
 int maximumNonAdjacentSum(vector<int> &nums){

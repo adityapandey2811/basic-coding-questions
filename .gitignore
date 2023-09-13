@@ -1530,3 +1530,99 @@ CREATE TABLE employees_audit (
     changedat DATETIME DEFAULT NULL,
     action VARCHAR(50) DEFAULT NULL
 );
+
+
+
+Syntax:
+DELIMITER &&  
+CREATE PROCEDURE procedure_name [[IN | OUT | INOUT] parameter_name datatype [, parameter datatype]) ]    
+BEGIN    
+    Declaration_section    
+    Executable_section    
+END &&  
+DELIMITER ;   
+
+SHOW PROCEDURE STATUS WHERE db = 'sample'; 
+
+drop procedure <procedure_name>;
+
+--------------- Example 1 ---------------------
+
+DELIMITER //
+
+CREATE PROCEDURE GetAllProducts()
+BEGIN
+	SELECT *  FROM products;
+END //
+
+DELIMITER ;
+
+
+calling the procedure: -->    CALL GetAllProducts();
+
+
+-------------- Example -2 ---------------------
+DELIMITER &&  
+CREATE PROCEDURE get_price_product ()  
+BEGIN  
+    SELECT * FROM products WHERE price > 18;  
+    SELECT COUNT(productname) AS Total_products FROM products;    
+END &&  
+DELIMITER ;  
+
+calling the procedure: -->   call get_price_product();
+
+
+------------- Example 3 : IN -------------------
+DELIMITER &&  
+CREATE PROCEDURE get_specific_product (IN sup_id INT)  
+BEGIN  
+    SELECT * FROM products where supplierid = sup_id;
+END &&  
+DELIMITER ;  
+
+calling the procedure: --> call get_specific_product(2);
+
+-------------- 	Example 4: OUT -----------------
+DELIMITER &&  
+CREATE PROCEDURE display_total_price (OUT total_amount INT)  
+BEGIN  
+    SELECT sum(price) INTO total_amount FROM products;   
+END &&  
+DELIMITER ;  
+
+calling the procedure: --> CALL display_total_price(@M);  --->  select @M  (M is session variable)
+                         
+-------------- 	Example 5: INOUT -----------------
+DELIMITER &&  
+CREATE PROCEDURE display_avg_price (INOUT var1 INT)  
+BEGIN  
+    SELECT avg(price) INTO var1 FROM products WHERE supplierid = var1;   
+END &&  
+DELIMITER ;  
+
+calling the procedure: --> SET @M = '3';  ----->   CALL display_avg_price(@M);  ----> SELECT @M;  
+
+
+===========================================================================================
+
+MySQL STORED PROCEDURES Local Variables
+Just like how we discussed the different types of supported parameters, we can also use Local Variables inside the procedures for temporary storage that have a scope limited to just that procedure itself.
+
+Syntax
+
+DECLARE {varName} DATATYPE [DEFAULT value] ;
+
+------------------ Example 6---------------------------------
+
+DELIMITER //
+CREATE PROCEDURE priceBelowAverage(OUT countBelowAverage INT)
+BEGIN
+    DECLARE avgPrice DECIMAL(5,2);
+    SELECT AVG(price) INTO avgPrice FROM products;
+    SELECT COUNT(*) INTO countBelowAverage FROM products WHERE price < avgPrice;
+END //
+DELIMITER ;
+
+ calling the procedure: -->   CALL priceBelowAverage(@countBelowAverage);  ---> SELECT @countBelowAverage;
+

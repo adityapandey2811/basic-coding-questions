@@ -1626,3 +1626,175 @@ DELIMITER ;
 
  calling the procedure: -->   CALL priceBelowAverage(@countBelowAverage);  ---> SELECT @countBelowAverage;
 
+
+
+
+
+
+
+In MySQL, a trigger is a stored program invoked automatically in response to an event such as insert, update, or delete that occurs in the associated table. For example, you can define a trigger that is invoked automatically before a new row is inserted into a table.
+
+MySQL supports triggers that are invoked in response to the INSERT, UPDATE or DELETE event.
+
+The SQL standard defines two types of triggers: row-level triggers and statement-level triggers.
+
+A row-level trigger is activated for each row that is inserted, updated, or deleted. For example, if a table has 100 rows inserted, updated, or deleted, the trigger is automatically invoked 100 times for the 100 rows affected.
+A statement-level trigger is executed once for each transaction regardless of how many rows are inserted, updated, or deleted.
+
+
+Advantages of triggers
+Triggers provide another way to check the integrity of data.
+Triggers handle errors from the database layer.
+Triggers give an alternative way to run scheduled tasks. By using triggers, you don’t have to wait for the scheduled events to run because the triggers are invoked automatically before or after a change is made to the data in a table.
+Triggers can be useful for auditing the data changes in tables.
+
+Disadvantages of triggers
+Triggers can only provide extended validations, not all validations. For simple validations, you can use the NOT NULL, UNIQUE, CHECK and FOREIGN KEY constraints.
+Triggers can be difficult to troubleshoot because they execute automatically in the database, which may not be visible to the client applications.
+Triggers may increase the overhead of the MySQL server.
+
+=====================================================================
+=========================== CREATE TRIGGER ==========================
+=====================================================================
+
+we will use the table as - employees_fun / employees_audit 
+
+>>>>>>>> Create Trigger >>>>>>>>>>
+CREATE TRIGGER trigger_name
+{BEFORE | AFTER} {INSERT | UPDATE| DELETE }
+ON table_name FOR EACH ROW
+trigger_body;
+
+>>>>>>>> Show Triggers >>>>>>>>>>
+---> SHOW TRIGGERS;
+
+>>>>>>>> DROP Triggers >>>>>>>>>>
+DROP TRIGGER <TRIGGER_NAME>
+
+
+---------------- Example :1 -------------
+CREATE TRIGGER before_employee_update 
+    BEFORE UPDATE ON employees
+    FOR EACH ROW 
+ INSERT INTO employees_audit
+ SET action = 'update',
+     employeeNumber = OLD.employeeNumber,
+     lastname = OLD.lastname,
+     changedat = NOW();
+
+After that, update a row in the employees table: --->
+
+UPDATE employees_fun
+SET 
+    lastName = 'Phan'
+WHERE
+    employeeNumber = 1056;
+
+Finally, query the employees_audit table to check if the trigger was fired by the UPDATE statement:
+----> SELECT * FROM employees_audit;
+
+
+
+=====================================================================
+=========================== AFTER INSERT==========================
+=====================================================================
+
+we will use the table as - members & reminders
+
+CREATE TABLE members (
+    id INT AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255),
+    birthDate DATE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE reminders (
+    id INT AUTO_INCREMENT,
+    memberId INT,
+    message VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id , memberId)
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER after_members_insert
+AFTER INSERT
+ON members FOR EACH ROW
+BEGIN
+    IF NEW.birthDate IS NULL THEN
+        INSERT INTO reminders(memberId, message)
+        VALUES(new.id,CONCAT('Hi ', NEW.name, ', please update your date of birth.'));
+    END IF;
+END$$
+
+DELIMITER ;
+
+----------------------
+Then,
+Testing the MySQL AFTER INSERT trigger
+First, insert two rows into the members table:
+
+-------------
+INSERT INTO members(name, email, birthDate)
+VALUES
+    ('John Doe', 'john.doe@example.com', NULL),
+    ('Jane Doe', 'jane.doe@example.com','2000-01-01');
+  
+---------------  
+    SELECT * FROM members;    
+---------------    
+    SELECT * FROM reminders
+
+We inserted two rows into the members table. However, only the first row that has a birth date value NULL, therefore, the trigger inserted only one row into the reminders table.
+
+
+=====================================================================
+=========================== BEFORE DELETE==========================
+=====================================================================
+
+CREATE TABLE Salaries (
+    employeeNumber INT PRIMARY KEY,
+    validFrom DATE NOT NULL,
+    amount DEC(12 , 2 ) NOT NULL DEFAULT 0
+);
+
+INSERT INTO salaries(employeeNumber,validFrom,amount)
+VALUES
+    (1002,'2000-01-01',50000),
+    (1056,'2000-01-01',60000),
+    (1076,'2000-01-01',70000);
+
+
+create a table that stores the deleted salary:
+
+CREATE TABLE SalaryArchives (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    employeeNumber INT,
+    validFrom DATE NOT NULL,
+    amount DEC(12 , 2 ) NOT NULL DEFAULT 0,
+    deletedAt TIMESTAMP DEFAULT NOW()
+);
+
+------------------------
+DELIMITER $$
+
+CREATE TRIGGER before_salaries_delete
+BEFORE DELETE
+ON salaries FOR EACH ROW
+BEGIN
+    INSERT INTO SalaryArchives(employeeNumber,validFrom,amount)
+    VALUES(OLD.employeeNumber,OLD.validFrom,OLD.amount);
+END$$    
+
+DELIMITER ;
+
+------------------------
+DELETE FROM salaries 
+WHERE employeeNumber = 1002;
+
+-------------------------
+SELECT * FROM SalaryArchives;
+
+

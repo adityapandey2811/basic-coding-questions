@@ -1,3 +1,53 @@
+// Level Order Solution
+class Solution {
+    public String getHappyString(int n, int k) {
+        if(k > 3*Math.pow(2,n-1)) return "";
+        Queue<String> q = new LinkedList<>();
+        ArrayList<String> list = new ArrayList<>();
+        int l = n;
+        q.offer("a");
+        q.offer("b");
+        q.offer("c");
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        n--;
+        while(!q.isEmpty() && n > 0) {
+            int size = q.size();
+            for(int i = 0; i< size;i++) {
+                String curr = q.poll();
+                if(curr.charAt(curr.length()-1) == 'a') {
+                    q.offer(curr + 'b');
+                    q.offer(curr + 'c');
+                    if(l == (new String(curr) + '1').length()) {
+                        list.add(curr + 'b');
+                        list.add(curr + 'c');
+                    }
+                } else if(curr.charAt(curr.length()-1) == 'b') {
+                    q.offer(curr + 'a');
+                    q.offer(curr + 'c');
+                    if(l == (new String(curr) + '1').length()) {
+                        list.add(curr + 'a');
+                        list.add(curr + 'c');
+                    }
+                } else {
+                    q.offer(curr + 'a');
+                    q.offer(curr + 'b');
+                    if(l == (new String(curr) + '1').length()) {
+                        list.add(curr + 'a');
+                        list.add(curr + 'b');
+                    }
+                }
+            }
+            n--;
+        }
+        for(String curr: list) System.out.println(curr);
+        return (l == 1)? (list.get(k-1)) : (list.get(k+2));
+    }
+}
+
+
+// Stack Solution
 class Solution {
     public String getHappyString(int n, int k) {
         Stack<String> stringsStack = new Stack<>();

@@ -19,3 +19,23 @@ class Solution {
         return lis;
     }
 }
+
+//O(NlogN) Solution
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        List<Integer> lis = new ArrayList<>();
+        lis.add(nums[0]);
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > lis.get(lis.size() - 1)) {
+                lis.add(nums[i]);
+            } else {
+                int idx = Collections.binarySearch(lis, nums[i]);
+                if (idx < 0) {
+                    idx = -(idx + 1);
+                }
+                lis.set(idx, nums[i]);
+            }
+        }
+        return lis.size();
+    }
+}
